@@ -3,299 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Trainer Partner</title>
+    <title>Gerador de Treinos Personalizados</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-
+        /* Custom styles to override or extend Tailwind if needed */
         body {
-            font-family: 'Poppins', sans-serif;
-            background: #0d1117;
-            color: #c9d1d9;
-            margin: 0;
-            padding: 0;
-            display: flex;
+            font-family: 'Roboto', sans-serif;
+            background-color: #2c3e50; /* Dark blue background */
+            color: #ecf0f1; /* Light gray text */
+        }
+        .container {
+            background-color: #34495e; /* Slightly lighter blue for containers */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        h1, h2 {
+            color: #e67e22; /* Orange for headings */
+        }
+        .input-group input[type="text"],
+        .input-group input[type="email"],
+        .input-group input[type="password"],
+        .input-group input[type="number"],
+        .input-group select,
+        .input-group textarea {
+            background-color: #4a6176; /* Darker input background */
+            color: #ecf0f1;
+        }
+        button {
+            background-color: #e67e22; /* Orange button */
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #d35400; /* Darker orange on hover */
+        }
+        button:disabled {
+            background-color: #95a5a6; /* Gray when disabled */
+            cursor: not-allowed;
+        }
+        #customDaysContainer {
+            border: 1px solid #7f8c8d;
+            background-color: #4a6176;
+        }
+        .custom-day-entry {
+            background-color: #3f556e;
+        }
+        .custom-day-entry .remove-day-btn {
+            background-color: #c0392b; /* Red for remove button */
+        }
+        .custom-day-entry .remove-day-btn:hover {
+            background-color: #a5281b;
+        }
+        #resultado {
+            background-color: #34495e;
+            line-height: 1.6;
+        }
+        #resultado h3 {
+            color: #e67e22;
+        }
+        #resultado ul li {
+            background-color: #4a6176;
+        }
+        #resultado ul li strong {
+            color: #f1c40f; /* Yellow for exercise names */
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #7f8c8d;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background-image: linear-gradient(135deg, #0d1117 0%, #171d2b 100%);
-            font-size: 18px;
         }
 
-        .container {
-            background: #161b22;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            width: 100%;
-            max-width: 900px;
-            box-sizing: border-box;
-            border: 1px solid #30363d;
-        }
-
-        h1 {
-            text-align: center;
-            color: #58a6ff;
-            margin-bottom: 25px;
-            font-weight: 700;
-            text-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
-            padding-bottom: 15px;
-            border-bottom: 1px solid #30363d;
-            font-size: 2.5em;
-        }
-
-        h2 {
-            color: #58a6ff;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            font-weight: 600;
-            font-size: 1.8em;
-        }
-
-        h3 {
-            font-size: 1.5em;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 400;
-            color: #8b949e;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            background: #0d1117;
-            color: #c9d1d9;
-            box-sizing: border-box;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            font-size: 1em;
-        }
-
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        select:focus {
-            border-color: #58a6ff;
-            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.3);
-            outline: none;
-        }
-        
-        input[type="checkbox"] {
-            margin-right: 10px;
-            transform: scale(1.2);
-        }
-        
-        .treino-dia {
-            border: 1px solid #30363d;
-            background: #1c2128;
-            padding: 25px;
-            margin-bottom: 20px;
-            border-radius: 12px;
+        .modal-content {
+            background-color: #34495e;
+            border: 1px solid #7f8c8d;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
             position: relative;
-            transition: box-shadow 0.3s;
-        }
-        
-        .treino-dia:hover {
-            box-shadow: 0 0 15px rgba(88, 166, 255, 0.1);
         }
 
-        .treino-dia h3 {
-            margin-top: 0;
-            color: #58a6ff;
-            font-size: 1.5em;
-            border-bottom: 1px solid #30363d;
-            padding-bottom: 10px;
-        }
-        
-        .treino-dia .remover {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            color: #f87171;
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
             font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 15px;
             cursor: pointer;
-            font-size: 1.1em;
-            transition: color 0.3s;
-        }
-        
-        .treino-dia .remover:hover {
-            color: #dc2626;
         }
 
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        
-        .tecnicas-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            flex-basis: calc(33.333% - 15px);
-            min-width: 150px;
-        }
-        
-        .tecnicas-group .checkbox-item {
-            flex-basis: calc(50% - 15px);
-        }
-
-        .checkbox-item label {
-            font-weight: 300;
-            font-size: 1em;
-            color: #c9d1d9;
-            margin-bottom: 0;
-        }
-        
-        .form-section {
-            background: #1c2128;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            border: 1px solid #30363d;
-        }
-
-        .form-section h2 {
-            border-bottom: 1px solid #30363d;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            color: #58a6ff;
-        }
-
-        .add-dia, button[type="submit"] {
-            width: 100%;
-            padding: 18px;
-            font-size: 1.1em;
-            font-weight: 600;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
+        .close-button:hover,
+        .close-button:focus {
+            color: #ecf0f1;
+            text-decoration: none;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-            margin-top: 15px;
         }
 
-        .add-dia:hover {
-            background-color: #3b82f6;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(88, 166, 255, 0.4);
+        .edit-buttons button {
+            background-color: #2980b9; /* Blue for edit */
         }
 
-        button[type="submit"] {
-            background-color: #38c172;
-            box-shadow: 0 5px 15px rgba(56, 193, 114, 0.3);
+        .edit-buttons button.remove {
+            background-color: #c0392b; /* Red for remove */
         }
 
-        button[type="submit"]:hover {
-            background-color: #2b9e59;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(56, 193, 114, 0.4);
+        #logoutButton {
+            background-color: #e74c3c;
         }
-        
-        /* Media Queries para responsividade */
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            h1 {
-                font-size: 2em;
-            }
-            .checkbox-item {
-                flex-basis: calc(50% - 15px);
-            }
+
+        #logoutButton:hover {
+            background-color: #c0392b;
         }
-        
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.8em;
-            }
-            .checkbox-item {
-                flex-basis: 100%;
-            }
-            .add-dia, button[type="submit"] {
-                font-size: 1em;
-            }
+
+        #userInfoDisplay {
+            color: #2ecc71; /* Green for user info */
         }
+
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>Your Trainer Partner</h1>
-        <form id="treinoForm">
-            <div class="form-section">
-                <h2>Informações do Aluno</h2>
-                <label for="nome_aluno">Nome do Aluno:</label>
-                <input type="text" id="nome_aluno" required>
+<body class="flex flex-col items-center min-h-screen p-5">
+    <div id="authContainer" class="container p-8 rounded-xl max-w-sm w-full mb-5 text-center">
+        <h2 class="text-3xl font-bold mb-6">Bem-vindo!</h2>
+        <div class="mb-4">
+            <label for="authEmail" class="block text-left text-sm font-bold mb-2">Email:</label>
+            <input type="email" id="authEmail" placeholder="Seu email" class="p-3 border border-gray-600 rounded-lg w-full text-base">
+        </div>
+        <div class="mb-6">
+            <label for="authPassword" class="block text-left text-sm font-bold mb-2">Senha:</label>
+            <input type="password" id="authPassword" placeholder="Sua senha" class="p-3 border border-gray-600 rounded-lg w-full text-base">
+        </div>
+        <div class="flex flex-col space-y-3">
+            <button onclick="handleAuth()" class="py-3 px-6 rounded-lg text-white font-bold text-lg">Login / Registrar</button>
+        </div>
+        <p id="authMessage" class="text-red-500 mt-4 text-sm"></p>
+    </div>
 
-                <label for="dificuldade">Nível de Dificuldade:</label>
-                <select id="dificuldade" required>
-                    <option value="Iniciante">Iniciante</option>
-                    <option value="Intermediario">Intermediario</option>
-                    <option value="Avancado">Avançado</option>
-                </select>
+    <div id="appContent" class="container p-8 rounded-xl max-w-3xl w-full mb-5" style="display: none;">
+        <h1 class="text-4xl font-bold mb-8">Gerador de Treinos Personalizados</h1>
 
-                <label for="objetivo">Objetivo do Treino:</label>
-                <select id="objetivo" required>
-                    <option value="Emagrecimento">Emagrecimento</option>
-                    <option value="Hipertrofia">Hipertrofia</option>
-                    <option value="Condicionamento Físico Geral">Condicionamento Físico Geral</option>
-                </select>
-                
-                <input type="checkbox" id="incluir_descricao">
-                <label for="incluir_descricao" style="display:inline; font-weight:300;">Incluir descrições detalhadas dos exercícios</label>
+        <div class="mb-4">
+            <label for="nomeAluno" class="block text-sm font-bold mb-2">Nome do Aluno:</label>
+            <input type="text" id="nomeAluno" placeholder="Digite o nome do aluno" required class="p-3 border border-gray-600 rounded-lg w-full text-base">
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label for="idade" class="block text-sm font-bold mb-2">Idade:</label>
+                <input type="number" id="idade" placeholder="Idade em anos" required min="10" max="100" class="p-3 border border-gray-600 rounded-lg w-full text-base">
             </div>
-
-            <div class="form-section">
-                <h2>Análise Nutricional</h2>
-                <label for="peso">Peso (kg):</label>
-                <input type="number" id="peso" step="0.1" required>
-
-                <label for="altura">Altura (cm):</label>
-                <input type="number" id="altura" required>
-
-                <label for="idade">Idade:</label>
-                <input type="number" id="idade" required>
-                
-                <label for="sexo">Sexo:</label>
-                <select id="sexo" required>
+            <div>
+                <label for="peso" class="block text-sm font-bold mb-2">Peso (kg):</label>
+                <input type="number" id="peso" placeholder="Peso em kg" required step="0.1" min="20" max="300" class="p-3 border border-gray-600 rounded-lg w-full text-base">
+            </div>
+            <div>
+                <label for="altura" class="block text-sm font-bold mb-2">Altura (cm):</label>
+                <input type="number" id="altura" placeholder="Altura em cm" required min="100" max="250" class="p-3 border border-gray-600 rounded-lg w-full text-base">
+            </div>
+            <div>
+                <label for="sexo" class="block text-sm font-bold mb-2">Sexo:</label>
+                <select id="sexo" required class="p-3 border border-gray-600 rounded-lg w-full text-base">
+                    <option value="">Selecione</option>
                     <option value="Masculino">Masculino</option>
                     <option value="Feminino">Feminino</option>
                 </select>
-
-                <label for="fator_atividade">Nível de Atividade Física:</label>
-                <select id="fator_atividade" required>
-                    <option value="1.2">Sedentário (pouco ou nenhum exercício)</option>
-                    <option value="1.375">Levemente Ativo (exercício leve 1-3 dias/semana)</option>
-                    <option value="1.55">Moderadamente Ativo (exercício moderado 3-5 dias/semana)</option>
-                    <option value="1.725">Muito Ativo (exercício intenso 6-7 dias/semana)</option>
-                    <option value="1.9">Extremamente Ativo (exercício muito intenso, 2x ao dia)</option>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label for="nivel" class="block text-sm font-bold mb-2">Nível de Treino:</label>
+                <select id="nivel" required class="p-3 border border-gray-600 rounded-lg w-full text-base">
+                    <option value="">Selecione</option>
+                    <option value="Iniciante">Iniciante</option>
+                    <option value="Intermediario">Intermediário</option>
+                    <option value="Avancado">Avançado</option>
                 </select>
             </div>
-            
-            <div id="diasDeTreino">
-                <h2>Planilha de Treino</h2>
+            <div>
+                <label for="objetivo" class="block text-sm font-bold mb-2">Objetivo:</label>
+                <select id="objetivo" required class="p-3 border border-gray-600 rounded-lg w-full text-base">
+                    <option value="">Selecione</option>
+                    <option value="Hipertrofia">Hipertrofia</option>
+                    <option value="Emagrecimento">Emagrecimento</option>
+                    <option value="Resistencia">Resistência</option>
+                </select>
             </div>
-            
-            <button type="button" class="add-dia" onclick="adicionarDiaTreino()">+ Adicionar Dia de Treino</button>
-            <button type="submit">Gerar PDF do Treino</button>
-        </form>
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-sm font-bold mb-2">Equipamentos Disponíveis:</label>
+            <div class="flex flex-wrap gap-4" id="equipamentos">
+                <div class="flex items-center"><input type="checkbox" id="equipamentoHalteres" value="Halteres" class="form-checkbox h-5 w-5 text-orange-600"><label for="equipamentoHalteres" class="ml-2 text-base">Halteres</label></div>
+                <div class="flex items-center"><input type="checkbox" id="equipamentoBarras" value="Barras" class="form-checkbox h-5 w-5 text-orange-600"><label for="equipamentoBarras" class="ml-2 text-base">Barras</label></div>
+                <div class="flex items-center"><input type="checkbox" id="equipamentoMaquinas" value="Máquinas" class="form-checkbox h-5 w-5 text-orange-600"><label for="equipamentoMaquinas" class="ml-2 text-base">Máquinas</label></div>
+                <div class="flex items-center"><input type="checkbox" id="equipamentoCabos" value="Cabos" class="form-checkbox h-5 w-5 text-orange-600"><label for="equipamentoCabos" class="ml-2 text-base">Cabos</label></div>
+                <div class="flex items-center"><input type="checkbox" id="equipamentoPesoCorporal" value="Peso Corporal" class="form-checkbox h-5 w-5 text-orange-600"><label for="equipamentoPesoCorporal" class="ml-2 text-base">Peso Corporal</label></div>
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-sm font-bold mb-2">Técnicas Avançadas (selecione as que deseja incluir, se for Avançado):</label>
+            <div class="flex flex-wrap gap-4" id="tecnicas">
+                <div class="flex items-center"><input type="checkbox" id="tecnicaDropSet" value="Drop Set" class="form-checkbox h-5 w-5 text-orange-600"><label for="tecnicaDropSet" class="ml-2 text-base">Drop Set</label></div>
+                <div class="flex items-center"><input type="checkbox" id="tecnicaBiSet" value="Bi-set" class="form-checkbox h-5 w-5 text-orange-600"><label for="tecnicaBiSet" class="ml-2 text-base">Bi-set</label></div>
+                <div class="flex items-center"><input type="checkbox" id="tecnicaSuperset" value="Superset" class="form-checkbox h-5 w-5 text-orange-600"><label for="tecnicaSuperset" class="ml-2 text-base">Superset</label></div>
+                <div class="flex items-center"><input type="checkbox" id="tecnicaFST7" value="FST-7" class="form-checkbox h-5 w-5 text-orange-600"><label for="tecnicaFST7" class="ml-2 text-base">FST-7</label></div>
+                <div class="flex items-center"><input type="checkbox" id="tecnicaRestPause" value="Rest-Pause" class="form-checkbox h-5 w-5 text-orange-600"><label for="tecnicaRestPause" class="ml-2 text-base">Rest-Pause</label></div>
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <label for="observacoes" class="block text-sm font-bold mb-2">Observações Adicionais (opcional):</label>
+            <textarea id="observacoes" rows="3" placeholder="Restrições, focos específicos, etc." class="p-3 border border-gray-600 rounded-lg w-full text-base"></textarea>
+        </div>
+
+        <h2 class="text-2xl font-bold mt-8 mb-4">Divisão Semanal do Treino</h2>
+        <div id="customDaysContainer" class="border border-gray-600 p-4 rounded-lg mb-4">
+            </div>
+        <button type="button" onclick="addCustomDay()" class="py-2 px-4 rounded-lg text-white font-bold text-base">Adicionar Dia de Treino</button>
+
+        <div class="flex flex-col md:flex-row justify-center gap-4 mt-8">
+            <button onclick="gerarTreino()" class="py-3 px-6 rounded-lg text-white font-bold text-lg">Gerar Treino</button>
+        </div>
+
+        <div id="resultado" class="p-6 rounded-xl mt-8">
+            </div>
     </div>
-    
+
+    <div id="genericModal" class="modal fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content bg-gray-700 p-8 rounded-xl max-w-lg w-full">
+            <span class="close-button text-gray-400 hover:text-white absolute top-3 right-5 text-2xl cursor-pointer" onclick="closeModal()">&times;</span>
+            <p id="modalMessage" class="text-lg mb-6"></p>
+            <button onclick="closeModal()" class="py-2 px-5 rounded-lg text-white font-bold text-base w-full">OK</button>
+        </div>
+    </div>
+
+    <div id="editExerciseModal" class="modal fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content bg-gray-700 p-8 rounded-xl max-w-lg w-full">
+            <span class="close-button text-gray-400 hover:text-white absolute top-3 right-5 text-2xl cursor-pointer" onclick="closeModal('editExerciseModal')">&times;</span>
+            <h3 class="text-2xl font-bold mb-6">Editar Exercício</h3>
+            <div class="mb-4">
+                <label for="editExName" class="block text-sm font-bold mb-2">Nome do Exercício:</label>
+                <input type="text" id="editExName" class="p-3 border border-gray-600 rounded-lg w-full text-base">
+            </div>
+            <div class="mb-4">
+                <label for="editExSetsReps" class="block text-sm font-bold mb-2">Séries/Repetições:</label>
+                <input type="text" id="editExSetsReps" class="p-3 border border-gray-600 rounded-lg w-full text-base">
+            </div>
+            <div class="mb-4">
+                <label for="editExRest" class="block text-sm font-bold mb-2">Descanso (segundos):</label>
+                <input type="number" id="editExRest" class="p-3 border border-gray-600 rounded-lg w-full text-base">
+            </div>
+            <div class="mb-6">
+                <label for="editExTechnique" class="block text-sm font-bold mb-2">Técnica:</label>
+                <input type="text" id="editExTechnique" class="p-3 border border-gray-600 rounded-lg w-full text-base">
+            </div>
+            <button onclick="saveEditedExercise()" class="py-2 px-5 rounded-lg text-white font-bold text-base w-full">Salvar Alterações</button>
+        </div>
+    </div>
+
+    <div id="addExerciseToDayModal" class="modal fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content bg-gray-700 p-8 rounded-xl max-w-lg w-full">
+            <span class="close-button text-gray-400 hover:text-white absolute top-3 right-5 text-2xl cursor-pointer" onclick="closeModal('addExerciseToDayModal')">&times;</span>
+            <h3 class="text-2xl font-bold mb-6">Adicionar Exercício</h3>
+            <div class="mb-4">
+                <label for="addExMuscleGroup" class="block text-sm font-bold mb-2">Grupo Muscular (para filtrar):</label>
+                <select id="addExMuscleGroup" onchange="updateAddExerciseGroupOptions()" class="p-3 border border-gray-600 rounded-lg w-full text-base">
+                    <option value="">Selecione um Grupo</option>
+                </select>
+            </div>
+            <div class="mb-6">
+                <label for="addExSelect" class="block text-sm font-bold mb-2">Selecione o Exercício:</label>
+                <select id="addExSelect" class="p-3 border border-gray-600 rounded-lg w-full text-base">
+                    <option value="">Selecione um Exercício</option>
+                </select>
+            </div>
+            <button onclick="addNewExerciseToDay()" class="py-2 px-5 rounded-lg text-white font-bold text-base w-full">Adicionar ao Dia</button>
+        </div>
+    </div>
+
     <script>
         const EXERCICIOS = [
             // PEITO
@@ -337,7 +336,7 @@
             {"nome": "Pullover com halteres deitado no banco", "grupoMuscular": "Costas", "subGrupo": "Dorsal", "estilo": "Puxada Vertical", "tipo": "isolador", "dificuldade": ["Iniciante", "Intermediario", "Avancado"], "sugerirRepeticoes": {"Iniciante": "3x15", "Intermediario": "4x12", "Avancado": "4x10-12"}, "descricao": "Deitado no banco, segure o halter com as duas mãos e o mova da cabeça em direção ao abdômen.", "sexo": ["Masculino", "Feminino"]},
             
             // PERNAS – Quadríceps + Adutores
-            {"nome": "Agachamento libre com barra nas costas", "grupoMuscular": "Quadríceps", "subGrupo": "Completo", "estilo": "Agachamento", "tipo": "composto", "dificuldade": ["Intermediario", "Avancado"], "sugerirRepeticoes": {"Iniciante": "3x12", "Intermediario": "4x8-10", "Avancado": "5x6-8"}, "descricao": "Com a barra nas costas, desça o quadril até que as coxas fiquem paralelas ao chão.", "sexo": ["Masculino", "Feminino"]},
+            {"nome": "Agachamento livre com barra nas costas", "grupoMuscular": "Quadríceps", "subGrupo": "Completo", "estilo": "Agachamento", "tipo": "composto", "dificuldade": ["Intermediario", "Avancado"], "sugerirRepeticoes": {"Iniciante": "3x12", "Intermediario": "4x8-10", "Avancado": "5x6-8"}, "descricao": "Com a barra nas costas, desça o quadril até que as coxas fiquem paralelas ao chão.", "sexo": ["Masculino", "Feminino"]},
             {"nome": "Agachamento frontal com barra", "grupoMuscular": "Quadríceps", "subGrupo": "Completo", "estilo": "Agachamento", "tipo": "composto", "dificuldade": ["Intermediario", "Avancado"], "sugerirRepeticoes": {"Iniciante": "3x12", "Intermediario": "4x8-10", "Avancado": "5x6-8"}, "descricao": "Com a barra nos ombros, à frente, desça o quadril até que as coxas fiquem paralelas ao chão.", "sexo": ["Masculino", "Feminino"]},
             {"nome": "Agachamento com halteres ao lado do corpo", "grupoMuscular": "Quadríceps", "subGrupo": "Completo", "estilo": "Agachamento", "tipo": "composto", "dificuldade": ["Iniciante", "Intermediario", "Avancado"], "sugerirRepeticoes": {"Iniciante": "3x12-15", "Intermediario": "4x10-12", "Avancado": "4x8-10"}, "descricao": "Segure os halteres ao lado do corpo e agache, mantendo o tronco reto.", "sexo": ["Masculino", "Feminino"]},
             {"nome": "Agachamento goblet com halter à frente", "grupoMuscular": "Quadríceps", "subGrupo": "Completo", "estilo": "Agachamento", "tipo": "composto", "dificuldade": ["Iniciante", "Intermediario", "Avancado"], "sugerirRepeticoes": {"Iniciante": "3x15", "Intermediario": "4x12-15", "Avancado": "4x10-12"}, "descricao": "Segure um halter com as duas mãos à frente do peito e agache.", "sexo": ["Masculino", "Feminino"]},
@@ -637,7 +636,6 @@
                     const gruposParaAumentar = grupos_musculares_ordenados.filter(g => !LIMITES_ACESSORIOS[g] || numExerciciosPorGrupo[g] < LIMITES_ACESSORIOS[g]);
                     if (gruposParaAumentar.length > 0) {
                         numExerciciosPorGrupo[gruposParaAumentar[Math.floor(Math.random() * gruposParaAumentar.length)]]++;
-                        somaAtual++;
                     } else {
                         break; // Nenhum grupo pode ser aumentado
                     }
@@ -741,7 +739,6 @@
                             e.dificuldade.includes(dificuldade) &&
                             e.sexo.includes(sexo) &&
                             e.nome !== ex1.nome &&
-                            !treino.some(t => t.nome === e.nome && t.tecnica) &&
                             estiloCompativeis.includes(e.estilo)
                         );
                         shuffleArray(possiveisEx2MesmoGrupo);
